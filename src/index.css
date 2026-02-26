@@ -1,0 +1,117 @@
+@import "tailwindcss";
+
+@theme {
+  /* Typography */
+  --font-sans: "Outfit", ui-sans-serif, system-ui, sans-serif;
+
+  /* Primary branding colors */
+  --color-primary: #0059ab;
+  --color-secondary: #6891a1;
+  --color-accent: #5b8d63;
+
+  /* Backgrounds */
+  --color-background-light: #e6efef;
+  --color-background-dark: #051630;
+
+  /* Text / Neutral */
+  --color-text-primary: #051630;
+  --color-text-secondary: #a6b8be;
+  --color-white: #ffffff;
+
+  /* Additional accents */
+  --color-secondary-accent: #3a5d5a;
+
+  /* Font */
+  --font-primary: "Outfit", sans-serif;
+}
+
+
+body {
+  background-color: #000000;
+  color: #ffffff;
+}
+
+@keyframes spin-slow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin-slow {
+  animation: spin-slow 10s linear infinite;
+}
+
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+/* Optimization for Smooth Scrolling */
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+/* Touch-friendly UI & Global resets */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button,
+a {
+  outline: none;
+}
+
+button:focus-visible,
+a:focus-visible {
+  box-shadow: 0 0 0 2px rgba(6, 182, 212, 0.5);
+  border-radius: inherit;
+}
+
+/* Fix mobile height issues */
+:root {
+  --vh: 1vh;
+}
+
+body {
+  height: calc(var(--vh, 1vh) * 100);
+  background-color: #000000;
+  color: #ffffff;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+/* GPU acceleration for heavy sections */
+section,
+.reveal-container {
+  will-change: transform, opacity;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+/* Fast font rendering */
+body {
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+.lenis.lenis-scrolling iframe {
+  pointer-events: none;
+}
