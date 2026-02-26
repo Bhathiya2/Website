@@ -10,7 +10,7 @@ import {
 
 const DeviceShowcase = () => {
   return (
-    <section className="py-24 relative overflow-hidden bg-black/50 overflow-hidden">
+    <section className="py-24 relative overflow-hidden bg-[#003366] overflow-hidden">
       {/* Background Decor */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-cyan-500/5 rounded-full blur-[120px] pointer-events-none" />
 
@@ -61,13 +61,13 @@ const DeviceShowcase = () => {
 
                 <div className="grid grid-cols-2 gap-4 flex-grow">
                   <div className="bg-white/5 rounded-xl p-4 border border-white/5">
-                    <div className="text-[10px] text-zinc-400 mb-1 uppercase tracking-widest">
+                    <div className="text-[10px] text-zinc-500 mb-1 uppercase tracking-widest">
                       Network Load
                     </div>
                     <div className="text-2xl font-black text-white">84.2%</div>
                   </div>
                   <div className="bg-white/5 rounded-xl p-4 border border-white/5">
-                    <div className="text-[10px] text-zinc-400 mb-1 uppercase tracking-widest">
+                    <div className="text-[10px] text-zinc-500 mb-1 uppercase tracking-widest">
                       Security Status
                     </div>
                     <div className="text-2xl font-black text-white">READY</div>
@@ -115,7 +115,7 @@ const DeviceShowcase = () => {
                   <div className="w-full h-full rounded-full bg-cyan-500 animate-pulse shadow-[0_0_15px_#06b6d4]" />
                 </div>
                 <div className="text-center mb-6">
-                  <div className="text-[8px] text-zinc-400 uppercase tracking-widest mb-1">
+                  <div className="text-[8px] text-zinc-500 uppercase tracking-widest mb-1">
                     Authenticated User
                   </div>
                   <div className="text-xs font-black text-white uppercase tracking-tighter">
@@ -197,7 +197,7 @@ const DeviceShowcase = () => {
                   <div className="text-white text-xs font-black uppercase tracking-widest mb-1">
                     {stat.label}
                   </div>
-                  <div className="text-[10px] text-zinc-400 font-mono leading-tight">
+                  <div className="text-[10px] text-zinc-500 font-mono leading-tight">
                     {stat.desc}
                   </div>
                 </motion.div>

@@ -1,4 +1,4 @@
-import { useState, memo, useMemo, useCallback } from "react";
+import { useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Cpu,
@@ -8,7 +8,6 @@ import {
   Globe,
   Layers,
 } from "lucide-react";
-import ServiceScene3D from "./ServiceScene3D";
 
 const features = [
   {
@@ -53,100 +52,6 @@ const features = [
   },
 ];
 
-// Memoized 3D Experience to prevent full canvas re-renders
-const VisualExperience = memo(({ active, features }) => (
-  <div className="relative h-[600px] hidden lg:block">
-    {/* Ambient Background Glows */}
-    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-cyan-500/5 rounded-full blur-[120px] -z-10" />
-
-    <div className="relative h-full w-full flex items-center justify-center">
-      {/* 3D Scene Container */}
-      <div className="absolute inset-0 z-0">
-        <ServiceScene3D activeIndex={active} />
-      </div>
-
-      {/* Overlaying HUD Elements (Minimal) */}
-      <div className="relative z-10 w-full h-full pointer-events-none p-12 flex flex-col justify-between">
-        <div className="flex justify-between items-start">
-          <motion.div
-            key={`title-${active}`}
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="bg-black/40 backdrop-blur-md border border-white/10 p-4 rounded-xl"
-          >
-            <div className="text-[10px] font-mono text-cyan-400 mb-1 uppercase tracking-widest font-bold">
-              Protocol_Selected
-            </div>
-            <div className="text-xl font-black text-white uppercase">
-              {features[active].title}
-            </div>
-          </motion.div>
-
-          <div className="text-right">
-            <div className="text-[10px] font-mono text-cyan-400/40 uppercase tracking-widest mb-2 font-bold">
-              Node_Status
-            </div>
-            <div className="flex gap-1 justify-end">
-              {[1, 2, 3, 4].map((i) => (
-                <motion.div
-                  key={i}
-                  animate={{ opacity: [0.2, 1, 0.2] }}
-                  transition={{
-                    duration: 1.5,
-                    repeat: Infinity,
-                    delay: i * 0.2,
-                  }}
-                  className="w-1.5 h-4 bg-cyan-400 rounded-full"
-                />
-              ))}
-            </div>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-2 gap-4">
-          {features[active].stats.map((stat, i) => (
-            <motion.div
-              key={`stat-${active}-${i}`}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 + i * 0.1 }}
-              className="bg-black/40 backdrop-blur-md border border-white/5 p-4 rounded-xl"
-            >
-              <div className="text-[9px] text-zinc-400 uppercase font-black tracking-widest mb-1 italic">
-                Metric_0{i + 1}
-              </div>
-              <div className="text-white font-black text-xs uppercase tracking-tight">
-                {stat}
-              </div>
-            </motion.div>
-          ))}
-        </div>
-      </div>
-
-      {/* Rotating Rings (Purely Visual) */}
-      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-        {[1, 2, 3].map((r) => (
-          <motion.div
-            key={r}
-            animate={{ rotate: 360 }}
-            transition={{
-              duration: 10 + r * 5,
-              repeat: Infinity,
-              ease: "linear",
-            }}
-            className="absolute border border-cyan-500/5 rounded-full"
-            style={{
-              width: `${300 + r * 100}px`,
-              height: `${300 + r * 100}px`,
-              transform: `rotateX(${60 + r * 10}deg) rotateY(${r * 15}deg)`,
-            }}
-          />
-        ))}
-      </div>
-    </div>
-  </div>
-));
-
 export default function FeatureRingSection() {
   const [active, setActive] = useState(0);
 
@@ -156,7 +61,7 @@ export default function FeatureRingSection() {
 
   return (
     <section className="py-24 md:py-32 bg-transparent relative overflow-hidden">
-      <div className="max-w-[1400px] mx-auto px-6 grid lg:grid-cols-2 gap-12 lg:gap-24 items-center">
+      <div className="max-w-3xl mx-auto px-6">
         {/* Left: Content List */}
         <div className="space-y-4 relative z-10 text-center lg:text-left">
           <motion.div
@@ -199,7 +104,7 @@ export default function FeatureRingSection() {
                 transition={{ duration: 5, repeat: Infinity, ease: "linear" }}
                 className="text-transparent bg-clip-text bg-linear-to-r from-cyan-400 via-blue-500 to-cyan-400 bg-size-[200%_auto] italic"
               >
-                SERVICES &nbsp;
+                SERVICES
               </motion.span>
             </h2>
 
@@ -210,7 +115,7 @@ export default function FeatureRingSection() {
               className="h-px bg-linear-to-r from-cyan-500/50 to-transparent mt-8 mb-8 origin-center lg:origin-left"
             />
 
-            <p className="text-zinc-300 text-base md:text-lg font-medium leading-relaxed max-w-xl border-l md:border-l-0 lg:border-l border-white/10 pl-6 md:pl-0 lg:pl-8 mx-auto lg:mx-0">
+            <p className="text-zinc-400 text-base md:text-lg font-medium leading-relaxed max-w-xl border-l md:border-l-0 lg:border-l border-white/10 pl-6 md:pl-0 lg:pl-8 mx-auto lg:mx-0">
               Powering businesses with{" "}
               <span className="text-white">
                 practical, future-ready technology
@@ -252,11 +157,11 @@ export default function FeatureRingSection() {
                 </div>
                 <div className="flex-1">
                   <h3
-                    className={`text-lg md:text-xl font-black mb-1 transition-colors uppercase tracking-tight ${active === index ? "text-white" : "text-zinc-400 group-hover/item:text-zinc-300"}`}
+                    className={`text-lg md:text-xl font-black mb-1 transition-colors uppercase tracking-tight ${active === index ? "text-white" : "text-zinc-500 group-hover/item:text-zinc-300"}`}
                   >
                     {feature.title}
                   </h3>
-                  <p className="text-[10px] font-mono font-black uppercase tracking-[0.2em] text-cyan-500/40 mb-2">
+                  <p className="text-[10px] font-mono font-black uppercase tracking-[0.2em] text-cyan-500/60 mb-2">
                     {feature.subtitle}
                   </p>
 
@@ -269,7 +174,7 @@ export default function FeatureRingSection() {
                         className="overflow-hidden"
                       >
                         <div className="h-px w-8 bg-transparent/10 mb-4" />
-                        <p className="text-zinc-400 text-sm leading-relaxed mb-4 max-w-md">
+                        <p className="text-zinc-300 text-sm leading-relaxed mb-4 max-w-md">
                           {feature.description}
                         </p>
                         <div className="flex flex-wrap gap-2">
@@ -287,16 +192,13 @@ export default function FeatureRingSection() {
                   </AnimatePresence>
                 </div>
                 <ArrowRight
-                  className={`text-zinc-500 transition-all duration-500 ${active === index ? "rotate-90 text-cyan-400 translate-x-1" : "group-hover/item:text-zinc-300"}`}
+                  className={`text-zinc-600 transition-all duration-500 ${active === index ? "rotate-90 text-cyan-400 translate-x-1" : "group-hover/item:text-zinc-400"}`}
                   size={20}
                 />
               </div>
             </motion.div>
           ))}
         </div>
-
-        {/* Right: Visual Experience (Memoized) */}
-        <VisualExperience active={active} features={features} />
       </div>
     </section>
   );

@@ -14,7 +14,7 @@ import SkyLogo from "../assets/Logo/Final-bakrmvd.png";
 
 export default function Footer() {
   return (
-    <footer className="bg-[#000508] text-gray-300 relative overflow-hidden pt-32 pb-12 border-t border-white/5">
+    <footer className="bg-[#002244] text-gray-300 relative overflow-hidden pt-32 pb-12 border-t border-white/5">
       {/* Background Decorative Elements */}
       <div className="absolute top-0 left-0 w-full h-px bg-linear-to-r from-transparent via-cyan-500/50 to-transparent" />
       <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-full max-w-4xl h-48 bg-cyan-500/10 blur-[120px] rounded-full pointer-events-none" />
@@ -74,8 +74,8 @@ export default function Footer() {
                   href="#"
                   whileHover={{
                     scale: 1.1,
-                    backgroundColor: "rgba(34,211,238,0.1)",
-                    borderColor: "rgba(34,211,238,0.4)",
+                    backgroundColor: "#F4C430",
+                    borderColor: "#F4C430",
                   }}
                   className="w-12 h-12 bg-transparent/5 border border-white/10 rounded-xl flex items-center justify-center text-gray-400 hover:text-cyan-400 transition-all"
                 >
