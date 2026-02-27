@@ -89,7 +89,7 @@ export default function Testimonials() {
                     className="text-4xl md:text-5xl lg:text-6xl font-black text-white leading-tight tracking-tighter"
                 >
                     TRUSTED BY <br/>
-                    <span className="text-transparent bg-clip-text bg-linear-to-r from-cyan-400 to-blue-500 italic">INDUSTRY LEADERS</span>
+                    <span className="text-transparent bg-clip-text bg-linear-to-r from-cyan-400 to-blue-500 italic pr-4">INDUSTRY LEADERS</span>
                 </motion.h2>
                 
                 <motion.p 
