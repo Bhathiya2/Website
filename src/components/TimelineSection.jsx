@@ -34,7 +34,7 @@ export default function TimelineSection() {
               <span className="text-cyan-400 font-black tracking-[0.3em] text-[10px] uppercase">Timeline Protocol</span>
           </div>
           <h2 className="text-5xl md:text-7xl lg:text-8xl font-black text-white leading-none tracking-tighter">
-            OUR <span className="text-transparent bg-clip-text bg-linear-to-r from-cyan-400 to-blue-500 italic">JOURNEY</span>
+            OUR <span className="text-transparent bg-clip-text bg-linear-to-r from-cyan-400 to-blue-500 italic pr-5">JOURNEY</span>
           </h2>
         </motion.div>
 
