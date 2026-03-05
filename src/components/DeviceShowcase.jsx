@@ -29,7 +29,7 @@ const DeviceShowcase = () => {
             className="text-4xl md:text-6xl font-black uppercase tracking-tighter"
           >
             Mobile &{" "}
-            <span className="text-transparent bg-clip-text bg-linear-to-r from-cyan-400 to-blue-500 italic">
+            <span className="text-transparent bg-clip-text bg-linear-to-r from-cyan-400 to-blue-500 italic pr-4">
               Tablet Interfaces
             </span>
           </motion.h2>

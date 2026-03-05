@@ -33,8 +33,8 @@ export default function ImageTextSection() {
             transition={{ delay: 0.2 }}
             className="text-4xl md:text-6xl lg:text-7xl font-black text-white mb-8 leading-[1] tracking-tighter text-center xl:text-left uppercase"
           >
-           {/**/} INTELLIGENT{" "}
-            <span className="text-transparent bg-clip-text bg-linear-to-r from-cyan-400 to-blue-500 italic">
+            {/**/} INTELLIGENT{" "}
+            <span className="text-transparent bg-clip-text bg-linear-to-r from-cyan-400 to-blue-500 italic pr-4">
               RESPONSE
             </span>{" "}
             <br className="hidden md:block" /> NETWORK
