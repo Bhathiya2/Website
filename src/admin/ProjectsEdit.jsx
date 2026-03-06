@@ -35,7 +35,7 @@ export default function ProjectsEdit() {
         if (img && typeof img === 'object') img = img.url || img.path || img.src || null;
         if (img) {
           if (/^https?:\/\//i.test(img) || img.startsWith('//')) setExistingImageUrl(img);
-          else setExistingImageUrl(`${API_HOST}/storage/${String(img).replace(/^\/+/, '')}`);
+          else setExistingImageUrl(`${API_HOST}/api/storage/${String(img).replace(/^\/+/, '')}`);
         }
       }
       return () => { mounted = false };
@@ -54,7 +54,7 @@ export default function ProjectsEdit() {
         if (img && typeof img === 'object') img = img.url || img.path || img.src || null;
         if (img) {
           if (/^https?:\/\//i.test(img) || img.startsWith('//')) setExistingImageUrl(img);
-          else setExistingImageUrl(`${API_HOST}/storage/${String(img).replace(/^\/+/, '')}`);
+          else setExistingImageUrl(`${API_HOST}/api/storage/${String(img).replace(/^\/+/, '')}`);
         }
       })
       .catch((err) => {

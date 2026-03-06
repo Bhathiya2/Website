@@ -1,7 +1,9 @@
-import React, { useEffect} from "react";
+import React, { useEffect, useState } from "react";
 import { ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 import PageCover from "../components/PageCover";
+import { getProjects, API_HOST } from "../api/ProjectApi";
 
 /* -------------------- Animations -------------------- */
 const fadeUp = {
@@ -22,50 +24,40 @@ const staggerContainer = {
   },
 };
 
-/* -------------------- Data -------------------- */
-const projects = [
-  {
-    title: "Eco-Industrial Sync",
-    image: "https://xtratheme.com/elementor/smart-home/wp-content/uploads/sites/23/2018/06/f10-600x600.jpg",
-    description: "Optimizing energy consumption across multi-factory nodes using AI predictive modeling.",
-    link: "#",
-  },
-  {
-    title: "Secure Port IoT",
-    image: "https://xtratheme.com/elementor/smart-home/wp-content/uploads/sites/23/2018/06/f9-600x600.jpg",
-    description: "Deployment of encrypted edge telemetry for maritime logistics tracking.",
-    link: "#",
-  },
-  {
-    title: "Neural Smart Grid",
-    image: "https://xtratheme.com/elementor/smart-home/wp-content/uploads/sites/23/2018/06/f8-600x600.jpg",
-    description: "Decentralized power management system for sustainable urban infrastructure.",
-    link: "#",
-  },
-  {
-    title: "Precision Ag-Tech",
-    image: "https://xtratheme.com/elementor/smart-home/wp-content/uploads/sites/23/2018/06/f7-600x600.jpg",
-    description: "Satellite-linked moisture and nutrient optimization for large scale farms.",
-    link: "#",
-  },
-  {
-    title: "Factory Flow Core",
-    image: "https://xtratheme.com/elementor/smart-home/wp-content/uploads/sites/23/2018/06/f6-600x600.jpg",
-    description: "Real-time bottleneck analysis using computer vision and LiDAR arrays.",
-    link: "#",
-  },
-  {
-    title: "Quantum Lab Link",
-    image: "https://xtratheme.com/elementor/smart-home/wp-content/uploads/sites/23/2018/06/f5-600x600.jpg",
-    description: "Ultra-low latency data bridges for scientific research environments.",
-    link: "#",
-  },
-];
+/* -------------------- Helpers -------------------- */
+const resolveImageUrl = (img) => {
+  if (!img) return null;
+  if (typeof img === "object") img = img.url || img.path || img.src || null;
+  if (!img) return null;
+  const s = String(img);
+  if (/^https?:\/\//i.test(s) || s.startsWith("//")) return s;
+  const clean = s.replace(/^\/+/, "");
+  if (clean.startsWith("storage/")) return `${API_HOST}/api/${clean}`;
+  return `${API_HOST}/api/storage/${clean}`;
+};
 
 const Projects = () => {
+  const navigate = useNavigate();
+  const [projects, setProjects] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
   useEffect(() => {
-          window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
-      }, []);
+    window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+  }, []);
+
+  useEffect(() => {
+    getProjects()
+      .then((res) => {
+        const all = res.data || [];
+        setProjects(all.filter((p) => p.status === "published"));
+      })
+      .catch((err) => {
+        console.error(err);
+        setError("Failed to load projects.");
+      })
+      .finally(() => setLoading(false));
+  }, []);
 
   return (
     <div className="bg-transparent min-h-screen text-white">
@@ -101,6 +93,25 @@ const Projects = () => {
              </p>
           </div>
 
+          {loading ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+              {[...Array(3)].map((_, i) => (
+                <div key={i} className="bg-black/50 border border-white/5 rounded-[2rem] overflow-hidden animate-pulse">
+                  <div className="aspect-[4/3] bg-white/5" />
+                  <div className="p-8 space-y-3">
+                    <div className="h-3 w-20 bg-white/10 rounded" />
+                    <div className="h-6 w-3/4 bg-white/10 rounded" />
+                    <div className="h-4 w-full bg-white/5 rounded" />
+                    <div className="h-4 w-2/3 bg-white/5 rounded" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : error ? (
+            <p className="text-zinc-500 text-center py-20">{error}</p>
+          ) : projects.length === 0 ? (
+            <p className="text-zinc-500 text-center py-20 uppercase tracking-widest text-sm">No projects found.</p>
+          ) : (
           <motion.div
             variants={staggerContainer}
             initial="hidden"
@@ -108,30 +119,44 @@ const Projects = () => {
             viewport={{ once: false, margin: "-10%" }}
             className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10"
           >
-            {projects.map((project, index) => (
+            {projects.map((project, index) => {
+              const imgUrl = resolveImageUrl(project.image);
+              const idLabel = String(project.id).padStart(2, "0");
+              return (
               <motion.article
-                key={index}
+                key={project.id}
                 variants={fadeUp}
-                className="group relative bg-black/50 border border-white/5 rounded-[2rem] overflow-hidden hover:border-cyan-500/30 transition-all duration-500"
+                onClick={() => navigate(`/projects/${project.id}`, { state: { project } })}
+                className="group relative bg-black/50 border border-white/5 rounded-[2rem] overflow-hidden hover:border-cyan-500/30 transition-all duration-500 cursor-pointer"
               >
                 <div className="aspect-[4/3] overflow-hidden relative">
                    <div className="absolute inset-0 bg-cyan-500/20 opacity-0 group-hover:opacity-100 transition-opacity z-10 mix-blend-overlay" />
-                   <img
-                     src={project.image}
-                     alt={project.title}
-                     className="w-full h-full object-cover grayscale brightness-75 group-hover:grayscale-0 group-hover:scale-110 transition-all duration-1000"
-                   />
+                   {imgUrl ? (
+                     <img
+                       src={imgUrl}
+                       alt={project.title}
+                       className="w-full h-full object-cover grayscale brightness-75 group-hover:grayscale-0 group-hover:scale-110 transition-all duration-1000"
+                       onError={(e) => { e.currentTarget.style.display = "none"; }}
+                     />
+                   ) : (
+                     <div className="w-full h-full bg-zinc-800 flex items-center justify-center">
+                       <span className="text-zinc-600 text-xs uppercase tracking-widest">No Image</span>
+                     </div>
+                   )}
                    <div className="absolute top-4 right-4 z-20">
-                      <div className="bg-black/80 backdrop-blur-md border border-white/10 p-3 rounded-full text-cyan-400 opacity-0 group-hover:opacity-100 transition-all translate-y-4 group-hover:translate-y-0">
+                      <button
+                        onClick={(e) => { e.stopPropagation(); navigate(`/projects/${project.id}`, { state: { project } }); }}
+                        className="bg-black/80 backdrop-blur-md border border-white/10 p-3 rounded-full text-cyan-400 opacity-0 group-hover:opacity-100 transition-all translate-y-4 group-hover:translate-y-0 flex"
+                      >
                          <ArrowRight size={20} />
-                      </div>
+                      </button>
                    </div>
                 </div>
 
                 <div className="p-8">
                    <div className="flex items-center gap-2 mb-4">
                       <span className="text-[10px] font-black text-cyan-400 tracking-widest uppercase bg-cyan-500/10 px-2 py-0.5 rounded">Active</span>
-                      <span className="text-[10px] font-black text-zinc-600 tracking-widest uppercase">ID.0{index + 1}</span>
+                      <span className="text-[10px] font-black text-zinc-600 tracking-widest uppercase">ID.{idLabel}</span>
                    </div>
                    <h3 className="text-2xl font-black text-white mb-4 uppercase tracking-tight group-hover:text-cyan-400 transition-colors">
                       {project.title}
@@ -142,8 +167,10 @@ const Projects = () => {
                    <div className="h-px w-full bg-white/5 group-hover:bg-cyan-500/20 transition-colors" />
                 </div>
               </motion.article>
-            ))}
+              );
+            })}
           </motion.div>
+          )}
         </div>
       </section>
     </div>

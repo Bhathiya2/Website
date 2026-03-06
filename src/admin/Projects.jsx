@@ -1,60 +1,61 @@
-import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import AdminLayout from "./AdminLayout";
 import { getProjects, deleteProject, API_HOST } from "../api/ProjectApi";
 
+const resolveImageUrl = (img) => {
+  if (!img) return null;
+  if (typeof img === "object") img = img.url || img.path || img.src || null;
+  if (!img) return null;
+  const s = String(img);
+  if (/^https?:\/\//i.test(s) || s.startsWith("//")) return s;
+  const clean = s.replace(/^\/+/, "");
+  if (clean.startsWith("storage/")) return `${API_HOST}/api/${clean}`;
+  return `${API_HOST}/api/storage/${clean}`;
+};
+
+const statusBadge = (status) => {
+  const map = {
+    published: "bg-emerald-600/20 border-emerald-600 text-emerald-300",
+    draft: "bg-zinc-700/40 border-zinc-600 text-zinc-300",
+    archived: "bg-yellow-600/20 border-yellow-600 text-yellow-300",
+  };
+  return map[status] || map.draft;
+};
+
 export default function Projects() {
+  const navigate = useNavigate();
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
   const [deletingId, setDeletingId] = useState(null);
   const [confirmId, setConfirmId] = useState(null);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [success, setSuccess] = useState("");
+  const [error, setError] = useState("");
 
-  useEffect(() => {
+  const load = () => {
     setLoading(true);
-    setError("");
     getProjects()
-      .then((res) => {
-        setProjects(res.data || []);
-      })
-      .catch((err) => {
-        console.error(err);
-        setError(err?.response?.data?.message || err.message || "Failed to load projects");
-      })
+      .then((res) => setProjects(res.data || []))
+      .catch(() => setError("Failed to load projects."))
       .finally(() => setLoading(false));
-  }, []);
-
-  const openConfirm = (id) => {
-    setConfirmId(id);
-    setConfirmOpen(true);
-    setSuccess("");
   };
 
-  const closeConfirm = () => {
-    setConfirmOpen(false);
-    setConfirmId(null);
-  };
+  useEffect(() => { load(); }, []);
+
+  const openConfirm = (id) => { setConfirmId(id); setConfirmOpen(true); setSuccess(""); };
+  const closeConfirm = () => { setConfirmOpen(false); setConfirmId(null); };
 
   const handleDelete = (id) => {
-    // perform delete (called after user confirms)
     setDeletingId(id);
     deleteProject(id)
       .then(() => {
         setProjects((prev) => prev.filter((p) => p.id !== id));
-        setSuccess("Project deleted.");
-        // clear success after a short delay
-        setTimeout(() => setSuccess(""), 2500);
+        setSuccess("Project deleted successfully.");
+        setTimeout(() => setSuccess(""), 3000);
       })
-      .catch((err) => {
-        console.error(err);
-        setError(err?.response?.data?.message || err.message || "Failed to delete project");
-      })
-      .finally(() => {
-        setDeletingId(null);
-        closeConfirm();
-      });
+      .catch(() => setError("Failed to delete project."))
+      .finally(() => { setDeletingId(null); closeConfirm(); });
   };
 
   return (
@@ -62,72 +63,118 @@ export default function Projects() {
       <div className="p-8">
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-3xl font-black">Projects</h1>
-          <Link to="/dashboard/projects/new" className="inline-flex items-center gap-2 px-3 py-1.5 bg-cyan-500 text-black rounded-md font-semibold hover:opacity-90 cursor-pointer">+ Add Project</Link>
+          <Link
+            to="new"
+            className="inline-flex items-center gap-2 px-3 py-1.5 bg-cyan-500 text-black rounded-md font-semibold hover:opacity-90"
+          >
+            + Add Project
+          </Link>
         </div>
+
+        {success && (
+          <div className="mb-4 rounded-md bg-emerald-600/20 border border-emerald-600 text-emerald-200 px-3 py-2">
+            {success}
+          </div>
+        )}
+        {error && (
+          <div className="mb-4 rounded-md bg-red-600/20 border border-red-600 text-red-300 px-3 py-2">
+            {error}
+          </div>
+        )}
 
         {loading ? (
           <div className="text-zinc-400">Loading projects...</div>
-        ) : error ? (
-          <div className="text-red-400">{error}</div>
-        ) : (
-          <>
-            {success && <div className="mb-4 rounded-md bg-emerald-600/20 border border-emerald-600 text-emerald-200 px-3 py-2">{success}</div>}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {projects.map((p) => {
-            let img = p.image || p.image_url || p.thumbnail || p.img || p.photo;
-            // if img is object with url
-            if (img && typeof img === 'object') img = img.url || img.path || img.src || null;
-            let imgUrl = null;
-            if (img) {
-              // Absolute external URL
-              if (/^https?:\/\//i.test(img) || img.startsWith('//')) {
-                imgUrl = img;
-              } else {
-                // ensure we use backend storage path: /storage/<file>
-                const clean = String(img).replace(/^\/+/, '');
-                imgUrl = `${API_HOST}/storage/${clean}`;
-              }
-            }
-
-            return (
-              <div key={p.id} className="p-6 rounded-2xl bg-accent/20 border border-cyan-600 flex flex-col">
-                {imgUrl && (
-                  <div className="mb-4 h-40 w-full overflow-hidden rounded-md">
-                    <img
-                      src={imgUrl}
-                      alt={p.title}
-                      className="w-full h-full object-cover"
-                      onError={(e) => {
-                        console.warn('Project image failed to load:', imgUrl);
-                        // replace with a subtle SVG placeholder
-                        e.currentTarget.src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="800" height="400"><rect width="100%" height="100%" fill="%230b0b0b"/><text x="50%" y="50%" fill="%23ffffff" font-size="20" text-anchor="middle" dominant-baseline="middle">Image not available</text></svg>';
-                      }}
-                    />
-                    <div className="text-xs text-zinc-400 mt-2 break-all">{imgUrl}</div>
-                  </div>
-                )}
-                  <div className="text-sm text-zinc-100 uppercase tracking-widest mb-2">Project #{p.id}</div>
-                  <div className="text-2xl font-bold">{p.title}</div>
-                  <p className="text-sm text-zinc-400 mt-3 flex-1">{p.description}</p>
-                  <div className="mt-4 flex items-center justify-end gap-2">
-                    <Link to={`/dashboard/projects/${p.id}/edit`} state={{ project: p }} className="px-3 py-1.5 bg-yellow-500 text-black rounded-md hover:opacity-90">Edit</Link>
-                    <button onClick={() => openConfirm(p.id)} disabled={deletingId === p.id} className="px-3 py-1.5 bg-red-600 text-white rounded-md hover:opacity-90 disabled:opacity-60 cursor-pointer disabled:cursor-not-allowed">{deletingId === p.id ? 'Deleting...' : 'Delete'}</button>
-                  </div>
-                </div>
-              )
-            })}
+        ) : projects.length === 0 ? (
+          <div className="text-zinc-500 py-16 text-center uppercase tracking-widest text-sm">
+            No projects found.{" "}
+            <Link to="new" className="text-cyan-400 underline">Add the first one.</Link>
           </div>
-          </>
+        ) : (
+          <div className="overflow-x-auto rounded-xl border border-white/10">
+            <table className="w-full text-sm text-left">
+              <thead className="bg-white/5 border-b border-white/10">
+                <tr>
+                  <th className="px-4 py-3 text-zinc-400 font-semibold w-16">ID</th>
+                  <th className="px-4 py-3 text-zinc-400 font-semibold w-20">Image</th>
+                  <th className="px-4 py-3 text-zinc-400 font-semibold">Title</th>
+                  <th className="px-4 py-3 text-zinc-400 font-semibold">Description</th>
+                  <th className="px-4 py-3 text-zinc-400 font-semibold">Status</th>
+                  <th className="px-4 py-3 text-zinc-400 font-semibold text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {projects.map((project) => {
+                  const imgUrl = resolveImageUrl(project.image);
+                  return (
+                    <tr key={project.id} className="border-b border-white/5 hover:bg-white/5 transition-colors">
+                      <td className="px-4 py-3 text-zinc-500">#{project.id}</td>
+                      <td className="px-4 py-3">
+                        {imgUrl ? (
+                          <img
+                            src={imgUrl}
+                            alt={project.title}
+                            className="w-14 h-10 object-cover rounded-md"
+                            onError={(e) => { e.currentTarget.style.display = "none"; }}
+                          />
+                        ) : (
+                          <div className="w-14 h-10 rounded-md bg-zinc-800 flex items-center justify-center">
+                            <span className="text-zinc-600 text-[9px]">N/A</span>
+                          </div>
+                        )}
+                      </td>
+                      <td className="px-4 py-3 font-semibold text-white max-w-[180px] truncate">
+                        {project.title}
+                      </td>
+                      <td className="px-4 py-3 text-zinc-400 max-w-[260px] truncate">
+                        {project.description || "—"}
+                      </td>
+                      <td className="px-4 py-3">
+                        <span className={`px-2 py-0.5 rounded border text-xs font-semibold uppercase tracking-wider ${statusBadge(project.status)}`}>
+                          {project.status}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3">
+                        <div className="flex items-center justify-end gap-2">
+                          <button
+                            onClick={() => navigate(`${project.id}/edit`, { state: { project } })}
+                            className="px-3 py-1.5 bg-white/5 border border-white/10 text-white rounded-md hover:bg-white/10 cursor-pointer"
+                          >
+                            Edit
+                          </button>
+                          <button
+                            onClick={() => openConfirm(project.id)}
+                            disabled={deletingId === project.id}
+                            className="px-3 py-1.5 bg-red-600 text-white rounded-md hover:opacity-90 disabled:opacity-60 cursor-pointer disabled:cursor-not-allowed"
+                          >
+                            {deletingId === project.id ? "Deleting..." : "Delete"}
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
         )}
-        {/* Confirm modal */}
+
+        {/* Confirm delete modal */}
         {confirmOpen && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={closeConfirm}>
-            <div className="bg-white/5 backdrop-blur-lg rounded-lg p-6 w-full max-w-md" onClick={(e) => e.stopPropagation()}>
-              <h3 className="text-lg font-semibold text-white mb-2">Confirm delete</h3>
-              <p className="text-sm text-zinc-400 mb-4">Are you sure you want to delete project #{confirmId}? This action cannot be undone.</p>
+            <div className="bg-zinc-900 border border-white/10 backdrop-blur-lg rounded-xl p-6 w-full max-w-md" onClick={(e) => e.stopPropagation()}>
+              <h3 className="text-lg font-semibold text-white mb-2">Confirm Delete</h3>
+              <p className="text-sm text-zinc-400 mb-4">Are you sure you want to delete this project? This action cannot be undone.</p>
               <div className="flex justify-end gap-3">
-                <button onClick={closeConfirm} className="px-4 py-2 bg-white/5 rounded-md cursor-pointer hover:opacity-90">Cancel</button>
-                <button onClick={() => handleDelete(confirmId)} disabled={deletingId === confirmId} className="px-4 py-2 bg-red-600 text-white rounded-md hover:opacity-90 cursor-pointer disabled:cursor-not-allowed">{deletingId === confirmId ? 'Deleting...' : 'Delete'}</button>
+                <button onClick={closeConfirm} className="px-4 py-2 bg-white/5 border border-white/10 rounded-md cursor-pointer hover:opacity-90">
+                  Cancel
+                </button>
+                <button
+                  onClick={() => handleDelete(confirmId)}
+                  disabled={deletingId === confirmId}
+                  className="px-4 py-2 bg-red-600 text-white rounded-md hover:opacity-90 cursor-pointer disabled:cursor-not-allowed"
+                >
+                  {deletingId === confirmId ? "Deleting..." : "Delete"}
+                </button>
               </div>
             </div>
           </div>

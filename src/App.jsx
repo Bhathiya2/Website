@@ -9,6 +9,7 @@ const Home = lazy(() => import("./pages/Home"));
 const About = lazy(() => import("./pages/About"));
 const Projects = lazy(() => import("./pages/Projects"));
 const Contact = lazy(() => import("./pages/Contact"));
+const ProjectDetail = lazy(() => import("./pages/ProjectDetail"));
 const Service = lazy(() => import("./pages/Service"));
 const IoTDevelopment = lazy(() => import("./pages/IoTDevelopment"));
 const SoftwareDevelopment = lazy(() => import("./pages/SoftwareDevelopment"));
@@ -64,6 +65,7 @@ function App() {
           <Route path="/about" element={<PublicRoute><About /></PublicRoute>} />
           <Route path="/projects" element={<PublicRoute><Projects /></PublicRoute>} />
           <Route path="/services" element={<PublicRoute><Service /></PublicRoute>} />
+           <Route path="/projects/:id" element={<PublicRoute><ProjectDetail /></PublicRoute>} />
           <Route path="/mobile-app-development" element={<PublicRoute><MobileAppDevelopment /></PublicRoute>} />
           <Route path="/support-maintenance" element={<PublicRoute><SupportAndMaintenance /></PublicRoute>} />
           <Route path="/iot-development" element={<PublicRoute><IoTDevelopment /></PublicRoute>} />
