@@ -74,7 +74,10 @@ export default function ProjectDetail() {
     setError("");
 
     // If the navigation state carries a matching project, use it immediately
-    if (location.state?.project && String(location.state.project.id) === String(id)) {
+    if (
+      location.state?.project &&
+      String(location.state.project.id) === String(id)
+    ) {
       setProject(location.state.project);
       setLoading(false);
       return;
@@ -94,30 +97,34 @@ export default function ProjectDetail() {
     getProjects()
       .then((res) => {
         const all = (res.data || []).filter(
-          (p) => p.status === "published" && String(p.id) !== String(id)
+          (p) => p.status === "published" && String(p.id) !== String(id),
         );
         setMore(all.slice(0, 3));
       })
       .catch(() => {});
   }, [id]);
 
-  if (loading) return (
-    <div className="bg-transparent min-h-screen text-white">
-      <Skeleton />
-    </div>
-  );
+  if (loading)
+    return (
+      <div className="bg-transparent min-h-screen text-white">
+        <Skeleton />
+      </div>
+    );
 
-  if (error || !project) return (
-    <div className="bg-transparent min-h-screen text-white flex flex-col items-center justify-center gap-6">
-      <p className="text-zinc-400 uppercase tracking-widest text-sm">{error || "Project not found."}</p>
-      <button
-        onClick={() => navigate("/projects")}
-        className="flex items-center gap-2 text-cyan-400 hover:text-cyan-300 transition-colors text-sm uppercase tracking-widest font-bold"
-      >
-        <ArrowLeft size={16} /> Back to Projects
-      </button>
-    </div>
-  );
+  if (error || !project)
+    return (
+      <div className="bg-transparent min-h-screen text-white flex flex-col items-center justify-center gap-6">
+        <p className="text-zinc-400 uppercase tracking-widest text-sm">
+          {error || "Project not found."}
+        </p>
+        <button
+          onClick={() => navigate("/projects")}
+          className="flex items-center gap-2 text-cyan-400 hover:text-cyan-300 transition-colors text-sm uppercase tracking-widest font-bold"
+        >
+          <ArrowLeft size={16} /> Back to Projects
+        </button>
+      </div>
+    );
 
   const imgUrl = resolveImageUrl(project.image);
   const idLabel = String(project.id).padStart(2, "0");
@@ -134,7 +141,9 @@ export default function ProjectDetail() {
             src={imgUrl}
             alt={project.title}
             className="absolute inset-0 w-full h-full object-cover"
-            onError={(e) => { e.currentTarget.style.display = "none"; }}
+            onError={(e) => {
+              e.currentTarget.style.display = "none";
+            }}
           />
         ) : (
           <div className="absolute inset-0 bg-zinc-900" />
@@ -189,7 +198,6 @@ export default function ProjectDetail() {
       {/* ── Main Content ── */}
       <div className="max-w-6xl mx-auto px-6 lg:px-12 py-16">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
-
           {/* ── Sidebar: Project Details ── */}
           <motion.aside
             variants={stagger}
@@ -208,25 +216,39 @@ export default function ProjectDetail() {
 
               <div className="space-y-5">
                 {/* Status */}
-                <motion.div variants={fadeUp} className="flex items-start gap-3">
+                <motion.div
+                  variants={fadeUp}
+                  className="flex items-start gap-3"
+                >
                   <div className="mt-0.5 p-1.5 rounded-md bg-cyan-500/10 border border-cyan-500/20">
                     <Tag size={13} className="text-cyan-400" />
                   </div>
                   <div>
-                    <p className="text-[10px] uppercase tracking-widest text-zinc-500 font-semibold mb-0.5">Status</p>
-                    <p className="text-sm text-white font-medium capitalize">{project.status}</p>
+                    <p className="text-[10px] uppercase tracking-widest text-zinc-500 font-semibold mb-0.5">
+                      Status
+                    </p>
+                    <p className="text-sm text-white font-medium capitalize">
+                      {project.status}
+                    </p>
                   </div>
                 </motion.div>
 
                 {/* Date Added */}
                 {project.created_at && (
-                  <motion.div variants={fadeUp} className="flex items-start gap-3">
+                  <motion.div
+                    variants={fadeUp}
+                    className="flex items-start gap-3"
+                  >
                     <div className="mt-0.5 p-1.5 rounded-md bg-cyan-500/10 border border-cyan-500/20">
                       <Calendar size={13} className="text-cyan-400" />
                     </div>
                     <div>
-                      <p className="text-[10px] uppercase tracking-widest text-zinc-500 font-semibold mb-0.5">Added</p>
-                      <p className="text-sm text-white font-medium">{formatDate(project.created_at)}</p>
+                      <p className="text-[10px] uppercase tracking-widest text-zinc-500 font-semibold mb-0.5">
+                        Added
+                      </p>
+                      <p className="text-sm text-white font-medium">
+                        {formatDate(project.created_at)}
+                      </p>
                     </div>
                   </motion.div>
                 )}
@@ -237,8 +259,12 @@ export default function ProjectDetail() {
 
               {/* ID badge */}
               <div className="mt-6 flex items-center justify-between">
-                <span className="text-[10px] uppercase tracking-widest text-zinc-600 font-bold">Project Reference</span>
-                <span className="font-black text-cyan-500 text-xs tracking-widest">PRJ-{idLabel}</span>
+                <span className="text-[10px] uppercase tracking-widest text-zinc-600 font-bold">
+                  Project Reference
+                </span>
+                <span className="font-black text-cyan-500 text-xs tracking-widest">
+                  PRJ-{idLabel}
+                </span>
               </div>
             </motion.div>
           </motion.aside>
@@ -260,7 +286,8 @@ export default function ProjectDetail() {
                 Project Overview
               </h2>
               <p className="text-zinc-400 leading-relaxed text-sm">
-                {project.description || "No description provided for this project."}
+                {project.description ||
+                  "No description provided for this project."}
               </p>
             </motion.div>
 
@@ -274,7 +301,9 @@ export default function ProjectDetail() {
                   src={imgUrl}
                   alt={project.title}
                   className="w-full object-cover max-h-[420px]"
-                  onError={(e) => { e.currentTarget.parentElement.style.display = "none"; }}
+                  onError={(e) => {
+                    e.currentTarget.parentElement.style.display = "none";
+                  }}
                 />
               </motion.div>
             )}
@@ -287,14 +316,21 @@ export default function ProjectDetail() {
               {[
                 { label: "Status", value: project.status, accent: true },
                 { label: "ID", value: `PRJ-${idLabel}` },
-                { label: "Added", value: formatDate(project.created_at) || "—" },
+                {
+                  label: "Added",
+                  value: formatDate(project.created_at) || "—",
+                },
               ].map((item) => (
                 <div
                   key={item.label}
                   className="bg-black/40 border border-white/8 rounded-xl p-5 flex flex-col gap-1"
                 >
-                  <span className="text-[10px] uppercase tracking-widest text-zinc-500 font-semibold">{item.label}</span>
-                  <span className={`text-base font-black tracking-tight capitalize ${item.accent ? "text-cyan-400" : "text-white"}`}>
+                  <span className="text-[10px] uppercase tracking-widest text-zinc-500 font-semibold">
+                    {item.label}
+                  </span>
+                  <span
+                    className={`text-base font-black tracking-tight capitalize ${item.accent ? "text-cyan-400" : "text-white"}`}
+                  >
                     {item.value}
                   </span>
                 </div>
@@ -315,7 +351,10 @@ export default function ProjectDetail() {
             <div className="flex items-center gap-4 mb-10">
               <div className="flex gap-1">
                 {[1, 2].map((i) => (
-                  <div key={i} className="w-1.5 h-1.5 rounded-full bg-cyan-500 animate-pulse" />
+                  <div
+                    key={i}
+                    className="w-1.5 h-1.5 rounded-full bg-cyan-500 animate-pulse"
+                  />
                 ))}
               </div>
               <h2 className="text-xs font-black uppercase tracking-[0.35em] text-cyan-400">
@@ -326,7 +365,8 @@ export default function ProjectDetail() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {more.map((p) => {
                 const mImgUrl = resolveImageUrl(p.image);
-                const goTo = () => navigate(`/projects/${p.id}`, { state: { project: p } });
+                const goTo = () =>
+                  navigate(`/projects/${p.id}`, { state: { project: p } });
                 return (
                   <div
                     key={p.id}
@@ -340,27 +380,38 @@ export default function ProjectDetail() {
                           src={mImgUrl}
                           alt={p.title}
                           className="w-full h-full object-cover grayscale brightness-75 group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700"
-                          onError={(e) => { e.currentTarget.style.display = "none"; }}
+                          onError={(e) => {
+                            e.currentTarget.style.display = "none";
+                          }}
                         />
                       ) : (
                         <div className="w-full h-full bg-zinc-900 flex items-center justify-center">
-                          <span className="text-zinc-700 text-xs uppercase tracking-widest">No Image</span>
+                          <span className="text-zinc-700 text-xs uppercase tracking-widest">
+                            No Image
+                          </span>
                         </div>
                       )}
                       <button
-                        onClick={(e) => { e.stopPropagation(); goTo(); }}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          goTo();
+                        }}
                         className="absolute top-3 right-3 z-20 bg-black/70 backdrop-blur border border-white/10 p-2 rounded-full text-cyan-400 opacity-0 group-hover:opacity-100 transition-all translate-y-2 group-hover:translate-y-0 flex"
                       >
                         <ArrowRight size={14} />
                       </button>
                     </div>
                     <div className="p-6">
-                      <span className="text-[10px] font-black text-zinc-600 uppercase tracking-widest">ID.{String(p.id).padStart(2, "0")}</span>
+                      <span className="text-[10px] font-black text-zinc-600 uppercase tracking-widest">
+                        ID.{String(p.id).padStart(2, "0")}
+                      </span>
                       <h3 className="text-base font-black uppercase tracking-tight text-white mt-1 group-hover:text-cyan-400 transition-colors">
                         {p.title}
                       </h3>
                       {p.description && (
-                        <p className="text-zinc-500 text-xs mt-2 leading-relaxed line-clamp-2">{p.description}</p>
+                        <p className="text-zinc-500 text-xs mt-2 leading-relaxed line-clamp-2">
+                          {p.description}
+                        </p>
                       )}
                     </div>
                   </div>

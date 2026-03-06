@@ -8,7 +8,12 @@ export default function ProjectsEdit() {
   const { id } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
-  const initial = location.state?.project || { id, title: "", description: "", status: "draft" };
+  const initial = location.state?.project || {
+    id,
+    title: "",
+    description: "",
+    status: "draft",
+  };
 
   const [title, setTitle] = useState(initial.title);
   const [description, setDescription] = useState(initial.description);
@@ -32,13 +37,20 @@ export default function ProjectsEdit() {
         setStatus(p.status || "draft");
         // resolve existing image field
         let img = p.image || p.image_url || p.thumbnail || p.img || p.photo;
-        if (img && typeof img === 'object') img = img.url || img.path || img.src || null;
+        if (img && typeof img === "object")
+          img = img.url || img.path || img.src || null;
         if (img) {
-          if (/^https?:\/\//i.test(img) || img.startsWith('//')) setExistingImageUrl(img);
-          else setExistingImageUrl(`${API_HOST}/api/storage/${String(img).replace(/^\/+/, '')}`);
+          if (/^https?:\/\//i.test(img) || img.startsWith("//"))
+            setExistingImageUrl(img);
+          else
+            setExistingImageUrl(
+              `${API_HOST}/api/storage/${String(img).replace(/^\/+/, "")}`,
+            );
         }
       }
-      return () => { mounted = false };
+      return () => {
+        mounted = false;
+      };
     }
 
     // otherwise fetch from API
@@ -51,19 +63,33 @@ export default function ProjectsEdit() {
         setDescription(p.description || "");
         setStatus(p.status || "draft");
         let img = p.image || p.image_url || p.thumbnail || p.img || p.photo;
-        if (img && typeof img === 'object') img = img.url || img.path || img.src || null;
+        if (img && typeof img === "object")
+          img = img.url || img.path || img.src || null;
         if (img) {
-          if (/^https?:\/\//i.test(img) || img.startsWith('//')) setExistingImageUrl(img);
-          else setExistingImageUrl(`${API_HOST}/api/storage/${String(img).replace(/^\/+/, '')}`);
+          if (/^https?:\/\//i.test(img) || img.startsWith("//"))
+            setExistingImageUrl(img);
+          else
+            setExistingImageUrl(
+              `${API_HOST}/api/storage/${String(img).replace(/^\/+/, "")}`,
+            );
         }
       })
       .catch((err) => {
         console.error(err);
-        if (mounted) setError(err?.response?.data?.message || err.message || "Failed to load project");
+        if (mounted)
+          setError(
+            err?.response?.data?.message ||
+              err.message ||
+              "Failed to load project",
+          );
       })
-      .finally(() => { if (mounted) setLoading(false) });
+      .finally(() => {
+        if (mounted) setLoading(false);
+      });
 
-    return () => { mounted = false };
+    return () => {
+      mounted = false;
+    };
   }, [id, location.state]);
 
   useEffect(() => {
@@ -82,7 +108,11 @@ export default function ProjectsEdit() {
       })
       .catch((err) => {
         console.error(err);
-        setError(err?.response?.data?.message || err.message || "Failed to update project");
+        setError(
+          err?.response?.data?.message ||
+            err.message ||
+            "Failed to update project",
+        );
       })
       .finally(() => setLoading(false));
   };
@@ -99,17 +129,32 @@ export default function ProjectsEdit() {
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-sm text-zinc-400 mb-1">Title</label>
-            <input value={title} onChange={(e) => setTitle(e.target.value)} className="w-full p-3 rounded-lg bg-white/5 text-white placeholder:text-zinc-400 border border-white/10 focus:outline-none focus:ring-2 focus:ring-cyan-500" />
+            <input
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              className="w-full p-3 rounded-lg bg-white/5 text-white placeholder:text-zinc-400 border border-white/10 focus:outline-none focus:ring-2 focus:ring-cyan-500"
+            />
           </div>
           <div>
-            <label className="block text-sm text-zinc-400 mb-1">Description</label>
-            <textarea value={description} onChange={(e) => setDescription(e.target.value)} className="w-full p-3 rounded-lg bg-white/5 text-white placeholder:text-zinc-400 border border-white/10 focus:outline-none focus:ring-2 focus:ring-cyan-500" rows={5} />
+            <label className="block text-sm text-zinc-400 mb-1">
+              Description
+            </label>
+            <textarea
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              className="w-full p-3 rounded-lg bg-white/5 text-white placeholder:text-zinc-400 border border-white/10 focus:outline-none focus:ring-2 focus:ring-cyan-500"
+              rows={5}
+            />
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm text-zinc-400 mb-1">Status</label>
-              <select value={status} onChange={(e) => setStatus(e.target.value)} className="w-full p-3 rounded-lg bg-white/5 text-white border border-white/10 focus:outline-none focus:ring-2 focus:ring-cyan-500">
+              <select
+                value={status}
+                onChange={(e) => setStatus(e.target.value)}
+                className="w-full p-3 rounded-lg bg-white/5 text-white border border-white/10 focus:outline-none focus:ring-2 focus:ring-cyan-500"
+              >
                 <option value="draft">Draft</option>
                 <option value="published">Published</option>
                 <option value="archived">Archived</option>
@@ -118,25 +163,75 @@ export default function ProjectsEdit() {
             <div>
               <label className="block text-sm text-zinc-400 mb-1">Image</label>
               <div className="flex items-center gap-3">
-                <button type="button" onClick={() => inputRef.current?.click()} className="px-4 py-2 bg-white/5 text-white rounded-md hover:bg-white/10">Choose Image</button>
-                <span className="text-sm text-zinc-400">{imageFile ? imageFile.name : (existingImageUrl ? 'Current image' : 'No file chosen')}</span>
+                <button
+                  type="button"
+                  onClick={() => inputRef.current?.click()}
+                  className="px-4 py-2 bg-white/5 text-white rounded-md hover:bg-white/10"
+                >
+                  Choose Image
+                </button>
+                <span className="text-sm text-zinc-400">
+                  {imageFile
+                    ? imageFile.name
+                    : existingImageUrl
+                      ? "Current image"
+                      : "No file chosen"}
+                </span>
               </div>
-              <input ref={inputRef} type="file" accept="image/*" onChange={(e) => {
-                const f = e.target.files?.[0] || null;
-                setImageFile(f);
-                if (f) setPreview(URL.createObjectURL(f));
-              }} className="hidden" />
+              <input
+                ref={inputRef}
+                type="file"
+                accept="image/*"
+                onChange={(e) => {
+                  const f = e.target.files?.[0] || null;
+                  setImageFile(f);
+                  if (f) setPreview(URL.createObjectURL(f));
+                }}
+                className="hidden"
+              />
               {preview ? (
-                <div className="mt-3"><img src={preview} alt="preview" className="max-h-44 rounded-md object-cover" /></div>
-              ) : (existingImageUrl && (
-                <div className="mt-3"><img src={existingImageUrl} alt="current" className="max-h-44 rounded-md object-cover" onError={(e)=>{e.currentTarget.style.display='none'}} /><div className="text-xs text-zinc-400 mt-2 break-all">{existingImageUrl}</div></div>
-              ))}
+                <div className="mt-3">
+                  <img
+                    src={preview}
+                    alt="preview"
+                    className="max-h-44 rounded-md object-cover"
+                  />
+                </div>
+              ) : (
+                existingImageUrl && (
+                  <div className="mt-3">
+                    <img
+                      src={existingImageUrl}
+                      alt="current"
+                      className="max-h-44 rounded-md object-cover"
+                      onError={(e) => {
+                        e.currentTarget.style.display = "none";
+                      }}
+                    />
+                    <div className="text-xs text-zinc-400 mt-2 break-all">
+                      {existingImageUrl}
+                    </div>
+                  </div>
+                )
+              )}
             </div>
           </div>
 
           <div className="flex items-center gap-3">
-            <button type="submit" disabled={loading} className="px-4 py-2 bg-cyan-500 text-black rounded-lg font-semibold disabled:opacity-60 hover:opacity-90 cursor-pointer">{loading ? 'Saving...' : 'Save'}</button>
-            <button type="button" onClick={() => navigate(-1)} className="px-4 py-2 bg-white/5 rounded-lg hover:opacity-90 cursor-pointer">Cancel</button>
+            <button
+              type="submit"
+              disabled={loading}
+              className="px-4 py-2 bg-cyan-500 text-black rounded-lg font-semibold disabled:opacity-60 hover:opacity-90 cursor-pointer"
+            >
+              {loading ? "Saving..." : "Save"}
+            </button>
+            <button
+              type="button"
+              onClick={() => navigate(-1)}
+              className="px-4 py-2 bg-white/5 rounded-lg hover:opacity-90 cursor-pointer"
+            >
+              Cancel
+            </button>
           </div>
           {error && <div className="text-sm text-red-400 mt-2">{error}</div>}
         </form>

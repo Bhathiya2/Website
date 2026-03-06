@@ -41,10 +41,19 @@ export default function Projects() {
       .finally(() => setLoading(false));
   };
 
-  useEffect(() => { load(); }, []);
+  useEffect(() => {
+    load();
+  }, []);
 
-  const openConfirm = (id) => { setConfirmId(id); setConfirmOpen(true); setSuccess(""); };
-  const closeConfirm = () => { setConfirmOpen(false); setConfirmId(null); };
+  const openConfirm = (id) => {
+    setConfirmId(id);
+    setConfirmOpen(true);
+    setSuccess("");
+  };
+  const closeConfirm = () => {
+    setConfirmOpen(false);
+    setConfirmId(null);
+  };
 
   const handleDelete = (id) => {
     setDeletingId(id);
@@ -55,7 +64,10 @@ export default function Projects() {
         setTimeout(() => setSuccess(""), 3000);
       })
       .catch(() => setError("Failed to delete project."))
-      .finally(() => { setDeletingId(null); closeConfirm(); });
+      .finally(() => {
+        setDeletingId(null);
+        closeConfirm();
+      });
   };
 
   return (
@@ -87,26 +99,43 @@ export default function Projects() {
         ) : projects.length === 0 ? (
           <div className="text-zinc-500 py-16 text-center uppercase tracking-widest text-sm">
             No projects found.{" "}
-            <Link to="new" className="text-cyan-400 underline">Add the first one.</Link>
+            <Link to="new" className="text-cyan-400 underline">
+              Add the first one.
+            </Link>
           </div>
         ) : (
           <div className="overflow-x-auto rounded-xl border border-white/10">
             <table className="w-full text-sm text-left">
               <thead className="bg-white/5 border-b border-white/10">
                 <tr>
-                  <th className="px-4 py-3 text-zinc-400 font-semibold w-16">ID</th>
-                  <th className="px-4 py-3 text-zinc-400 font-semibold w-20">Image</th>
-                  <th className="px-4 py-3 text-zinc-400 font-semibold">Title</th>
-                  <th className="px-4 py-3 text-zinc-400 font-semibold">Description</th>
-                  <th className="px-4 py-3 text-zinc-400 font-semibold">Status</th>
-                  <th className="px-4 py-3 text-zinc-400 font-semibold text-right">Actions</th>
+                  <th className="px-4 py-3 text-zinc-400 font-semibold w-16">
+                    ID
+                  </th>
+                  <th className="px-4 py-3 text-zinc-400 font-semibold w-20">
+                    Image
+                  </th>
+                  <th className="px-4 py-3 text-zinc-400 font-semibold">
+                    Title
+                  </th>
+                  <th className="px-4 py-3 text-zinc-400 font-semibold">
+                    Description
+                  </th>
+                  <th className="px-4 py-3 text-zinc-400 font-semibold">
+                    Status
+                  </th>
+                  <th className="px-4 py-3 text-zinc-400 font-semibold text-right">
+                    Actions
+                  </th>
                 </tr>
               </thead>
               <tbody>
                 {projects.map((project) => {
                   const imgUrl = resolveImageUrl(project.image);
                   return (
-                    <tr key={project.id} className="border-b border-white/5 hover:bg-white/5 transition-colors">
+                    <tr
+                      key={project.id}
+                      className="border-b border-white/5 hover:bg-white/5 transition-colors"
+                    >
                       <td className="px-4 py-3 text-zinc-500">#{project.id}</td>
                       <td className="px-4 py-3">
                         {imgUrl ? (
@@ -114,11 +143,15 @@ export default function Projects() {
                             src={imgUrl}
                             alt={project.title}
                             className="w-14 h-10 object-cover rounded-md"
-                            onError={(e) => { e.currentTarget.style.display = "none"; }}
+                            onError={(e) => {
+                              e.currentTarget.style.display = "none";
+                            }}
                           />
                         ) : (
                           <div className="w-14 h-10 rounded-md bg-zinc-800 flex items-center justify-center">
-                            <span className="text-zinc-600 text-[9px]">N/A</span>
+                            <span className="text-zinc-600 text-[9px]">
+                              N/A
+                            </span>
                           </div>
                         )}
                       </td>
@@ -129,14 +162,20 @@ export default function Projects() {
                         {project.description || "—"}
                       </td>
                       <td className="px-4 py-3">
-                        <span className={`px-2 py-0.5 rounded border text-xs font-semibold uppercase tracking-wider ${statusBadge(project.status)}`}>
+                        <span
+                          className={`px-2 py-0.5 rounded border text-xs font-semibold uppercase tracking-wider ${statusBadge(project.status)}`}
+                        >
                           {project.status}
                         </span>
                       </td>
                       <td className="px-4 py-3">
                         <div className="flex items-center justify-end gap-2">
                           <button
-                            onClick={() => navigate(`${project.id}/edit`, { state: { project } })}
+                            onClick={() =>
+                              navigate(`${project.id}/edit`, {
+                                state: { project },
+                              })
+                            }
                             className="px-3 py-1.5 bg-white/5 border border-white/10 text-white rounded-md hover:bg-white/10 cursor-pointer"
                           >
                             Edit
@@ -146,7 +185,9 @@ export default function Projects() {
                             disabled={deletingId === project.id}
                             className="px-3 py-1.5 bg-red-600 text-white rounded-md hover:opacity-90 disabled:opacity-60 cursor-pointer disabled:cursor-not-allowed"
                           >
-                            {deletingId === project.id ? "Deleting..." : "Delete"}
+                            {deletingId === project.id
+                              ? "Deleting..."
+                              : "Delete"}
                           </button>
                         </div>
                       </td>
@@ -160,12 +201,26 @@ export default function Projects() {
 
         {/* Confirm delete modal */}
         {confirmOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={closeConfirm}>
-            <div className="bg-zinc-900 border border-white/10 backdrop-blur-lg rounded-xl p-6 w-full max-w-md" onClick={(e) => e.stopPropagation()}>
-              <h3 className="text-lg font-semibold text-white mb-2">Confirm Delete</h3>
-              <p className="text-sm text-zinc-400 mb-4">Are you sure you want to delete this project? This action cannot be undone.</p>
+          <div
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
+            onClick={closeConfirm}
+          >
+            <div
+              className="bg-zinc-900 border border-white/10 backdrop-blur-lg rounded-xl p-6 w-full max-w-md"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <h3 className="text-lg font-semibold text-white mb-2">
+                Confirm Delete
+              </h3>
+              <p className="text-sm text-zinc-400 mb-4">
+                Are you sure you want to delete this project? This action cannot
+                be undone.
+              </p>
               <div className="flex justify-end gap-3">
-                <button onClick={closeConfirm} className="px-4 py-2 bg-white/5 border border-white/10 rounded-md cursor-pointer hover:opacity-90">
+                <button
+                  onClick={closeConfirm}
+                  className="px-4 py-2 bg-white/5 border border-white/10 rounded-md cursor-pointer hover:opacity-90"
+                >
                   Cancel
                 </button>
                 <button
